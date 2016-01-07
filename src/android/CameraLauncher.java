@@ -606,7 +606,17 @@ private String ouputModifiedBitmap(Bitmap bitmap, Uri uri) throws IOException {
         return modifiedPath;
     }
 
-
+public String getRealPathFromURI(Uri contentUri) {
+    String res = null;
+    String[] proj = { MediaStore.Images.Media.DATA };
+    Cursor cursor = cordova.getActivity().getContentResolver().query(contentUri, proj, null, null, null);
+    if(cursor.moveToFirst()){;
+       int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+       res = cursor.getString(column_index);
+    }
+    cursor.close();
+    return res;
+}
 
 /**
      * Applies all needed transformation to the image received from the gallery.
@@ -639,7 +649,7 @@ private String ouputModifiedBitmap(Bitmap bitmap, Uri uri) throws IOException {
             // rotating, nor compressing needs to be done
             if (this.targetHeight == -1 && this.targetWidth == -1 &&
                     (destType == FILE_URI || destType == NATIVE_URI) && !this.correctOrientation) {
-                this.callbackContext.success(uri.toString());
+                this.callbackContext.success(getRealPathFromURI(uri.toString()));
             } else {
                 String uriString = uri.toString();
                 // Get the path to the image. Makes loading so much easier.
